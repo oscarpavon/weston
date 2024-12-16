@@ -4799,6 +4799,34 @@ shell_destroy(struct wl_listener *listener, void *data)
 	free(shell);
 }
 
+
+
+static char * const terminal[] = {"/bin/xfce4-terminal","--hide-menubar", "--hide-borders", "--hide-scrollbar", "--hide-toolbar", NULL};
+
+static void
+pe_launch_program(struct weston_keyboard *keyboard,
+		   const struct timespec *time, uint32_t button, void *data)
+{
+
+
+	pid_t pid;
+
+	pid = fork();
+	if (pid < 0) {
+		return;
+	}
+
+	if (pid)
+		return;
+
+	if (setsid() == -1)
+		exit(EXIT_FAILURE);
+
+	if (execvp(terminal[0], terminal) < 0) {
+		exit(1);
+	}
+}
+
 static void
 shell_add_bindings(struct weston_compositor *ec, struct desktop_shell *shell)
 {
@@ -4849,13 +4877,13 @@ shell_add_bindings(struct weston_compositor *ec, struct desktop_shell *shell)
 					     mod | MODIFIER_SHIFT,
 					     resize_binding, shell);
 
-	weston_compositor_add_key_binding(ec, KEY_LEFT, mod | MODIFIER_SHIFT,
+	weston_compositor_add_key_binding(ec, KEY_H,mod ,
 					  set_tiled_orientation_left, NULL);
-	weston_compositor_add_key_binding(ec, KEY_RIGHT, mod | MODIFIER_SHIFT,
+	weston_compositor_add_key_binding(ec, KEY_L, mod ,
 					  set_tiled_orientation_right, NULL);
-	weston_compositor_add_key_binding(ec, KEY_UP, mod | MODIFIER_SHIFT,
+	weston_compositor_add_key_binding(ec, KEY_K, mod ,
 					  set_tiled_orientation_up, NULL);
-	weston_compositor_add_key_binding(ec, KEY_DOWN, mod | MODIFIER_SHIFT,
+	weston_compositor_add_key_binding(ec, KEY_J, mod ,
 					  set_tiled_orientation_down, NULL);
 
 	if (ec->capabilities & WESTON_CAP_ROTATION_ANY)
@@ -4868,8 +4896,13 @@ shell_add_bindings(struct weston_compositor *ec, struct desktop_shell *shell)
 					  ec);
 	weston_compositor_add_key_binding(ec, KEY_F10, mod, backlight_binding,
 					  ec);
-	weston_compositor_add_key_binding(ec, KEY_K, mod,
+	weston_compositor_add_key_binding(ec, KEY_Q, mod | MODIFIER_SHIFT,
 				          force_kill_binding, shell);
+
+	//pavon binding
+
+	weston_compositor_add_key_binding(ec, KEY_ENTER, mod, pe_launch_program,
+					  shell);
 
 	weston_install_debug_key_binding(ec, mod);
 }

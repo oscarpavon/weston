@@ -212,6 +212,7 @@ check_desktop_ready(struct window *window)
 	}
 }
 
+
 static void
 panel_launcher_activate(struct panel_launcher *widget)
 {
