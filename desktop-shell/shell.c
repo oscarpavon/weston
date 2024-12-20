@@ -45,7 +45,7 @@
 #include <libweston/shell-utils.h>
 #include <libweston/desktop.h>
 
-#define DEFAULT_NUM_WORKSPACES 1
+#define DEFAULT_NUM_WORKSPACES 6
 #define DEFAULT_WORKSPACE_CHANGE_ANIMATION_LENGTH 200
 
 struct focus_state {
@@ -4265,11 +4265,11 @@ switcher_next(struct switcher *switcher)
 			if (prev == switcher->current)
 				next = view;
 			prev = view;
-			weston_view_set_alpha(view, 0.25);
+			weston_view_set_alpha(view, 1);
 		}
 
 		if (is_black_surface_view(view, NULL))
-			weston_view_set_alpha(view, 0.25);
+			weston_view_set_alpha(view, 1);
 	}
 
 	if (next == NULL)
@@ -4283,7 +4283,7 @@ switcher_next(struct switcher *switcher)
 
 	switcher->current = next;
 	wl_list_for_each(view, &next->surface->views, surface_link)
-		weston_view_set_alpha(view, 1.0);
+		weston_view_set_alpha(view, 0.85);
 
 	shsurf = get_shell_surface(switcher->current->surface);
 	if (shsurf && weston_desktop_surface_get_fullscreen(shsurf->desktop_surface))
@@ -4345,7 +4345,7 @@ switcher_key(struct weston_keyboard_grab *grab,
 	struct switcher *switcher = container_of(grab, struct switcher, grab);
 	enum wl_keyboard_key_state state = state_w;
 
-	if (key == KEY_TAB && state == WL_KEYBOARD_KEY_STATE_PRESSED)
+	if (key == KEY_J  && state == WL_KEYBOARD_KEY_STATE_PRESSED)
 		switcher_next(switcher);
 }
 
@@ -4864,7 +4864,7 @@ shell_add_bindings(struct weston_compositor *ec, struct desktop_shell *shell)
 				           MODIFIER_SUPER | MODIFIER_ALT,
 				           surface_opacity_binding, NULL);
 
-	weston_compositor_add_key_binding(ec, KEY_M, mod | MODIFIER_SHIFT,
+	weston_compositor_add_key_binding(ec, KEY_SPACE, mod | MODIFIER_SHIFT,
 					  maximize_binding, NULL);
 	weston_compositor_add_key_binding(ec, KEY_F, mod | MODIFIER_SHIFT,
 					  fullscreen_binding, NULL);
@@ -4877,21 +4877,22 @@ shell_add_bindings(struct weston_compositor *ec, struct desktop_shell *shell)
 					     mod | MODIFIER_SHIFT,
 					     resize_binding, shell);
 
-	weston_compositor_add_key_binding(ec, KEY_H,mod ,
+	weston_compositor_add_key_binding(ec, KEY_H,mod | MODIFIER_SHIFT,
 					  set_tiled_orientation_left, NULL);
-	weston_compositor_add_key_binding(ec, KEY_L, mod ,
+	weston_compositor_add_key_binding(ec, KEY_L, mod | MODIFIER_SHIFT,
 					  set_tiled_orientation_right, NULL);
-	weston_compositor_add_key_binding(ec, KEY_K, mod ,
+	weston_compositor_add_key_binding(ec, KEY_K, mod | MODIFIER_SHIFT,
 					  set_tiled_orientation_up, NULL);
-	weston_compositor_add_key_binding(ec, KEY_J, mod ,
+	weston_compositor_add_key_binding(ec, KEY_J, mod | MODIFIER_SHIFT,
 					  set_tiled_orientation_down, NULL);
 
 	if (ec->capabilities & WESTON_CAP_ROTATION_ANY)
 		weston_compositor_add_button_binding(ec, BTN_MIDDLE, mod,
 						     rotate_binding, NULL);
 
-	weston_compositor_add_key_binding(ec, KEY_TAB, mod, switcher_binding,
+	weston_compositor_add_key_binding(ec, KEY_J , mod, switcher_binding,
 					  shell);
+
 	weston_compositor_add_key_binding(ec, KEY_F9, mod, backlight_binding,
 					  ec);
 	weston_compositor_add_key_binding(ec, KEY_F10, mod, backlight_binding,
